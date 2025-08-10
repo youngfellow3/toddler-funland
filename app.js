@@ -27,7 +27,7 @@
     { name:'Vehicles', emojis:'🚗 🚕 🚌 🚒 🚜 🚀 🛸 🚂 ✈️ 🚁 🚓 🛻 🚤 🛵 🚲'.split(' ') },
     { name:'Toys',     emojis:'🧸 🪀 🪅 🎈 🎠 🎪 🪁 🧩 🎲 🛝 🎯 🛴 🧃 🎮 🪆'.split(' ') },
     { name:'Fruits',   emojis:'🍌 🍉 🍓 🍎 🍐 🍊 🍇 🥝 🍍 🫐 🍑 🍒 🥥 🥭 🍈'.split(' ') },
-    { name:'Bubbles',  emojis:Array(15).fill('🫧') },
+    { name:'Bubbles', emojis: Array(SPRITE_COUNT).fill('🫧') },,
   ];
   let categoryIndex = 0;
   const currentSet = () => CATEGORIES[categoryIndex].emojis;
