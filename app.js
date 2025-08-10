@@ -1,30 +1,23 @@
 (() => {
   const field = document.getElementById('playfield');
   const toolbar = document.getElementById('toolbar');
-  const headerEl = document.querySelector('header');
-  
+  const headerEl = document.getElementById('appHeader');
+  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Keep playfield exactly between header & toolbar
   function syncLayoutVars(){
-    const th = toolbar ? toolbar.clientHeight : 112;
-    const hh = headerEl ? headerEl.clientHeight : 56;
+    // Fallbacks prevent zero height if elements are temporarily not measured
+    const th = toolbar ? Math.max(80, toolbar.clientHeight) : 112;
+    const hh = headerEl ? Math.max(40, headerEl.clientHeight) : 56;
     document.documentElement.style.setProperty('--toolbarH', th + 'px');
     document.documentElement.style.setProperty('--headerH',  hh + 'px');
-    // re-clamp sprites to the new playfield size
-    sprites.forEach(place);
   }
-  
-  // run at startup
   syncLayoutVars();
-  
-  // update when the window or UI changes size/rows
   addEventListener('resize', syncLayoutVars);
-  
-  // also react to toolbar/header growing/shrinking (button wrap, font size changes, etc.)
   if ('ResizeObserver' in window) {
-    new ResizeObserver(syncLayoutVars).observe(toolbar);
-    new ResizeObserver(syncLayoutVars).observe(headerEl);
+    if (toolbar) new ResizeObserver(syncLayoutVars).observe(toolbar);
+    if (headerEl) new ResizeObserver(syncLayoutVars).observe(headerEl);
   }
-  
-  const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Themes */
   const themes = ['', 'theme-sunset', 'theme-ocean', 'theme-meadow'];
@@ -51,13 +44,13 @@
     { name:'Vehicles', emojis:'🚗 🚕 🚌 🚒 🚜 🚀 🛸 🚂 ✈️ 🚁 🚓 🛻 🚤 🛵 🚲'.split(' ') },
     { name:'Toys',     emojis:'🧸 🪀 🪅 🎈 🎠 🎪 🪁 🧩 🎲 🛝 🎯 🛴 🧃 🎮 🪆'.split(' ') },
     { name:'Fruits',   emojis:'🍌 🍉 🍓 🍎 🍐 🍊 🍇 🥝 🍍 🫐 🍑 🍒 🥥 🥭 🍈'.split(' ') },
-    { name:'Bubbles', emojis: Array(SPRITE_COUNT).fill('🫧') },,
+    { name:'Bubbles',  emojis: Array(6).fill('🫧') }, // match sprite count
   ];
   let categoryIndex = 0;
   const currentSet = () => CATEGORIES[categoryIndex].emojis;
   const nextCategory = () => (categoryIndex = (categoryIndex + 1) % CATEGORIES.length);
 
-  /* Calm speed */
+  /* Calm speed & counts */
   const SPRITE_COUNT = 6;
   const SPEED_MIN = 0.05, SPEED_MAX = 0.12;
   const TAP_CONFETTI = 20;
@@ -85,11 +78,10 @@
     const s = {
       el,
       size: sizePx,
-      x: rand(0, field.clientWidth - sizePx),
-      y: rand(0, field.clientHeight - sizePx),
+      x: rand(0, Math.max(0, field.clientWidth  - sizePx)),
+      y: rand(0, Math.max(0, field.clientHeight - sizePx)),
       vx: (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX),
       vy: (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX),
-      moving: true
     };
     place(s);
 
@@ -106,14 +98,14 @@
     sprites.push(s);
   }
 
-function place(s){
-  const maxX = field.clientWidth  - s.size;
-  const maxY = field.clientHeight - s.size;
-  s.x = clamp(s.x, 0, maxX);
-  s.y = clamp(s.y, 0, maxY);
-  s.el.style.left = s.x + 'px';
-  s.el.style.top  = s.y + 'px';
-}
+  function place(s){
+    const maxX = Math.max(0, field.clientWidth  - s.size);
+    const maxY = Math.max(0, field.clientHeight - s.size);
+    s.x = clamp(s.x, 0, maxX);
+    s.y = clamp(s.y, 0, maxY);
+    s.el.style.left = s.x + 'px';
+    s.el.style.top  = s.y + 'px';
+  }
 
   /* Animation loop */
   function tick(t){
@@ -122,12 +114,14 @@ function place(s){
     lastT = t;
 
     if(running){
+      const maxXBase = Math.max(0, field.clientWidth);
+      const maxYBase = Math.max(0, field.clientHeight);
       for(const s of sprites){
         s.x += s.vx * dt;
         s.y += s.vy * dt;
 
-        const maxX = field.clientWidth  - s.size;
-        const maxY = field.clientHeight - s.size;
+        const maxX = Math.max(0, maxXBase - s.size);
+        const maxY = Math.max(0, maxYBase - s.size);
         if (s.x <= 0 || s.x >= maxX) { s.vx *= -1; s.x = clamp(s.x, 0, maxX); }
         if (s.y <= 0 || s.y >= maxY) { s.vy *= -1; s.y = clamp(s.y, 0, maxY); }
 
@@ -138,7 +132,7 @@ function place(s){
     requestAnimationFrame(tick);
   }
 
-  /* Confetti — gentle */
+  /* Confetti */
   function burstConfetti(x, y, n=TAP_CONFETTI){
     for(let i=0;i<n;i++){
       const c = document.createElement('div');
@@ -172,7 +166,7 @@ function place(s){
     }
   });
 
-  /* RAIN: 5s overlay + main fall now; respawn 2s after fall */
+  /* Rain: 5s overlay + main fall now; respawn 2s after fall */
   document.getElementById('btnRain').addEventListener('click', ()=>{
     emojiRain(5000);
     fallAndSwapAfterDelay();
@@ -193,7 +187,7 @@ function place(s){
         d.className = 'raindrop';
         d.textContent = sample(currentSet());
         d.style.left = (Math.random()*100) + 'vw';
-        const fallMs = 3500 + Math.random()*2500;  // slower 3.5–6.0s
+        const fallMs = 3500 + Math.random()*2500;  // 3.5–6.0s
         const delayMs = Math.random()*400;
         d.style.animationDuration = fallMs + 'ms';
         d.style.animationDelay = delayMs + 'ms';
@@ -221,8 +215,8 @@ function place(s){
       sprites.forEach(s=>{
         s.size = Math.round(rand(72, 128));
         s.el.style.fontSize = s.size + 'px';
-        s.x = rand(0, field.clientWidth  - s.size);
-        s.y = rand(0, field.clientHeight - s.size);
+        s.x = rand(0, Math.max(0, field.clientWidth  - s.size));
+        s.y = rand(0, Math.max(0, field.clientHeight - s.size));
         s.vx = (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX);
         s.vy = (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX);
         s.el.textContent = sample(currentSet());
@@ -235,7 +229,7 @@ function place(s){
     }, 1000 + 2000);
   }
 
-  /* SWITCH CATEGORY: immediate, no rain */
+  /* Switch category instantly */
   document.getElementById('btnSwitch').addEventListener('click', ()=>{
     nextCategory();
     sprites.forEach(s=>{
@@ -262,13 +256,12 @@ function place(s){
     document.body.animate([{filter:'brightness(1)'},{filter:'brightness(1.2)'},{filter:'brightness(1)'}], {duration:420});
   }
 
-  /* Init */
+  // --- Init AFTER we measure layout
+  syncLayoutVars();
   for(let i=0;i<SPRITE_COUNT;i++) makeSprite();
   if(!prefersReduced) requestAnimationFrame(tick);
 
-  /* Keep sprites in bounds on resize */
+  // Keep sprites in bounds on any resize
   addEventListener('resize', ()=> sprites.forEach(place));
-
-  /* Prevent long-press menu on mobile */
   document.addEventListener('contextmenu', e=> e.preventDefault(), { passive:false });
 })();
