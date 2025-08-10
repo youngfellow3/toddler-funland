@@ -102,10 +102,10 @@ function place(s){
         s.x += s.vx * dt;
         s.y += s.vy * dt;
 
-        const maxX = innerWidth - s.size;
-        const maxY = innerHeight - 120 - s.size;
-        if(s.x <= 0 || s.x >= maxX){ s.vx *= -1; s.x = clamp(s.x, 0, maxX) }
-        if(s.y <= 60 || s.y >= maxY){ s.vy *= -1; s.y = clamp(s.y, 60, maxY) }
+        const maxX = field.clientWidth  - s.size;
+        const maxY = field.clientHeight - s.size;
+        if (s.x <= 0 || s.x >= maxX) { s.vx *= -1; s.x = clamp(s.x, 0, maxX); }
+        if (s.y <= 0 || s.y >= maxY) { s.vy *= -1; s.y = clamp(s.y, 0, maxY); }
 
         s.el.style.left = s.x + 'px';
         s.el.style.top  = s.y + 'px';
