@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toddler Funland — Emoji Rain + Categories</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header><div class="title">🎈 Toddler Funland — Emoji Rain</div></header>
+  <div class="hint">Tap emojis to giggle & grow. Tap background for gentle confetti.</div>
+
+  <div id="playfield" aria-label="Play area"></div>
+
+  <!-- Colors | Rain | Switch Category | Start/Stop -->
+  <div class="toolbar" role="group" aria-label="Controls">
+    <div class="tool-grid">
+      <button class="btn btn--primary" id="btnTheme" aria-label="Change Colors">🎨 Colors</button>
+      <button class="btn" id="btnRain" aria-label="Emoji Rain">🌧️ Rain (5s)</button>
+      <button class="btn btn--soft" id="btnSwitch" aria-label="Switch Category">🔀 Switch Category</button>
+      <button class="btn btn--good" id="btnStartStop" aria-label="Start or Stop">⏸️ Stop</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
