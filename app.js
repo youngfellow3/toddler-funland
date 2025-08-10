@@ -288,10 +288,13 @@ function waitForLayoutAndStart(tries = 30){
 
 waitForLayoutAndStart();
 
-// Keep sprites in bounds on any resize
-addEventListener('resize', ()=> { syncLayoutVars(); sprites.forEach(place); });
-document.addEventListener('contextmenu', e=> e.preventDefault(), { passive:false });
+/* Keep sprites in bounds on resize */
+addEventListener('resize', () => sprites.forEach(place));
 
+/* Fix layout after phone/tablet rotation */
 addEventListener('orientationchange', () => setTimeout(syncLayoutVars, 300));
 
+/* Prevent long-press menu on mobile */
+document.addEventListener('contextmenu', e => e.preventDefault(), { passive:false });
 
+})();
