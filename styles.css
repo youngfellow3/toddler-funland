@@ -2,7 +2,12 @@
   --bg1:#e9f1ff; --bg2:#f7edff;
   --card:#ffffff; --text:#1b2133; --muted:#6b7390;
   --accent:#7cc4ff; --accent2:#a78bfa; --accent3:#ffd372; --good:#66e3a9;
+
+  /* dynamic, updated by JS */
+  --headerH: 56px;
+  --toolbarH: 112px;
 }
+
 .theme-sunset{ --bg1:#fff2e0; --bg2:#ffe6f0; --text:#281b1b; --muted:#6f5454; --accent:#ff9f80; --accent2:#ff7fd1; --accent3:#ffe066; --good:#7ef0c0 }
 .theme-ocean{  --bg1:#e6fbff; --bg2:#e8efff; --text:#0e1f2b; --muted:#4e6a7a; --accent:#66d9ff; --accent2:#88a3ff; --accent3:#b1ffe0; --good:#5de3b2 }
 .theme-meadow{ --bg1:#f1ffe9; --bg2:#eaffe6; --text:#1a2b1a; --muted:#4b6b4b; --accent:#9be15d; --accent2:#b493ff; --accent3:#ffd36e; --good:#58e3aa }
@@ -22,10 +27,11 @@ body{
   touch-action:manipulation;
 }
 
+/* Header */
 header{
   position:fixed; left:0; right:0; top:0; z-index:3;
   display:flex; align-items:center; justify-content:center;
-  padding:10px 12px; height:56px;
+  padding:10px 12px; height:auto;
 }
 .title{
   font-weight:900; letter-spacing:.2px;
@@ -35,12 +41,15 @@ header{
   font-size: clamp(18px, 4vw, 26px);
 }
 
+/* Playfield uses dynamic header/toolbar heights */
 #playfield{
-  position:absolute;
-  inset: var(--headerH, 56px) 0 var(--toolbarH, 112px) 0;
+  position:absolute; left:0; right:0;
+  top: var(--headerH);
+  bottom: var(--toolbarH);
   overflow:hidden;
 }
 
+/* Toolbar */
 .toolbar{
   position:fixed; left:0; right:0; bottom:0; z-index:4;
   background: color-mix(in hsl, var(--card), #fff 22%);
@@ -66,6 +75,7 @@ header{
 .btn--soft{ background: linear-gradient(135deg, #eef1ff, #fafbff) }
 .btn--good{ background: linear-gradient(135deg, var(--good), #ccffe9); color:#0f221a }
 
+/* Sprites */
 .sprite{
   position:absolute; will-change: transform,left,top;
   font-size: clamp(72px, 9vw, 120px);
@@ -78,31 +88,18 @@ header{
 .pop { animation: pop .35s cubic-bezier(.2,.9,.2,1) }
 @keyframes pop { 0%{ transform: scale(0) } 70%{ transform: scale(1.08) } 100%{ transform: scale(1) } }
 
-.main-fall{
-  animation: fallMain 1000ms ease-in forwards;
-  pointer-events:none;
-}
-@keyframes fallMain{
-  to{ transform: translateY(120vh) rotate(25deg); opacity:.6 }
-}
+.main-fall{ animation: fallMain 1000ms ease-in forwards; pointer-events:none; }
+@keyframes fallMain{ to{ transform: translateY(120vh) rotate(25deg); opacity:.6 } }
 
 .confetti{ position:fixed; width:12px; height:12px; border-radius:3px; pointer-events:none; z-index:10 }
 
+/* Rain overlay */
 .raindrop{
   position:fixed; top:-10vh; font-size: clamp(48px, 7vw, 96px);
   pointer-events:none; z-index:5; filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
   animation: fall linear forwards;
 }
-@keyframes fall{
-  to{ transform: translateY(120vh) rotate(360deg); opacity:.9 }
-}
-
-.hint{
-  position:fixed; right:10px; top:60px; z-index:2;
-  padding:.5rem .75rem; border-radius:12px;
-  background: color-mix(in hsl, var(--card), #fff 18%);
-  border:1px solid rgba(0,0,0,.06); color: var(--muted); font-size:14px;
-}
+@keyframes fall{ to{ transform: translateY(120vh) rotate(360deg); opacity:.9 } }
 
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{ animation:none !important; transition:none !important }
