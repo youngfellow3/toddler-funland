@@ -41,9 +41,8 @@ header{
   font-size: clamp(18px, 4vw, 26px);
 }
 
-/* Playfield uses dynamic header/toolbar heights */
 #playfield{
-  position:absolute; left:0; right:0;
+  position:fixed; left:0; right:0;
   top: var(--headerH);
   bottom: var(--toolbarH);
   overflow:hidden;
