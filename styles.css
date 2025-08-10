@@ -35,7 +35,11 @@ header{
   font-size: clamp(18px, 4vw, 26px);
 }
 
-#playfield{ position:absolute; inset:56px 0 112px 0; overflow:hidden; }
+#playfield{
+  position:absolute;
+  inset: var(--headerH, 56px) 0 var(--toolbarH, 112px) 0;
+  overflow:hidden;
+}
 
 .toolbar{
   position:fixed; left:0; right:0; bottom:0; z-index:4;
