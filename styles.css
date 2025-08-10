@@ -1,0 +1,105 @@
+:root{
+  --bg1:#e9f1ff; --bg2:#f7edff;
+  --card:#ffffff; --text:#1b2133; --muted:#6b7390;
+  --accent:#7cc4ff; --accent2:#a78bfa; --accent3:#ffd372; --good:#66e3a9;
+}
+.theme-sunset{ --bg1:#fff2e0; --bg2:#ffe6f0; --text:#281b1b; --muted:#6f5454; --accent:#ff9f80; --accent2:#ff7fd1; --accent3:#ffe066; --good:#7ef0c0 }
+.theme-ocean{  --bg1:#e6fbff; --bg2:#e8efff; --text:#0e1f2b; --muted:#4e6a7a; --accent:#66d9ff; --accent2:#88a3ff; --accent3:#b1ffe0; --good:#5de3b2 }
+.theme-meadow{ --bg1:#f1ffe9; --bg2:#eaffe6; --text:#1a2b1a; --muted:#4b6b4b; --accent:#9be15d; --accent2:#b493ff; --accent3:#ffd36e; --good:#58e3aa }
+
+*{ box-sizing:border-box }
+html, body { height:100% }
+body{
+  margin:0;
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,"Apple Color Emoji","Segoe UI Emoji";
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, color-mix(in hsl, var(--bg2), #fff 30%), transparent 60%),
+    radial-gradient(1000px 600px at 120% 120%, color-mix(in hsl, var(--bg1), #fff 10%), transparent 50%),
+    linear-gradient(180deg, var(--bg1), var(--bg2));
+  overflow:hidden;
+  user-select:none; -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+header{
+  position:fixed; left:0; right:0; top:0; z-index:3;
+  display:flex; align-items:center; justify-content:center;
+  padding:10px 12px; height:56px;
+}
+.title{
+  font-weight:900; letter-spacing:.2px;
+  background: conic-gradient(from 0deg, var(--accent), var(--accent2), var(--accent3), var(--accent));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 2px 0 rgba(255,255,255,.6);
+  font-size: clamp(18px, 4vw, 26px);
+}
+
+#playfield{ position:absolute; inset:56px 0 112px 0; overflow:hidden; }
+
+.toolbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:4;
+  background: color-mix(in hsl, var(--card), #fff 22%);
+  border-top: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 -8px 24px rgba(0,0,0,.08);
+  padding: 12px;
+}
+.tool-grid{
+  display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;
+}
+@media (max-width:640px){ .tool-grid{ grid-template-columns: repeat(2, 1fr) } }
+.btn{
+  border:0; cursor:pointer; font-weight:900;
+  padding: 18px 12px; border-radius:18px;
+  min-height: 82px; width:100%;
+  font-size: clamp(18px, 4.6vw, 22px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.08), inset 0 0 0 2px rgba(0,0,0,.04);
+  background: var(--card); color: var(--text);
+  transition: transform .06s ease;
+}
+.btn:active{ transform: scale(.98) }
+.btn--primary{ background: linear-gradient(135deg, var(--accent), var(--accent3)); color:#101010 }
+.btn--soft{ background: linear-gradient(135deg, #eef1ff, #fafbff) }
+.btn--good{ background: linear-gradient(135deg, var(--good), #ccffe9); color:#0f221a }
+
+.sprite{
+  position:absolute; will-change: transform,left,top;
+  font-size: clamp(72px, 9vw, 120px);
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.1));
+  transition: transform .12s ease, opacity .2s ease;
+}
+@keyframes wobble { 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-2px) } }
+.sprite.wobble{ animation: wobble 6s ease-in-out infinite }
+
+.pop { animation: pop .35s cubic-bezier(.2,.9,.2,1) }
+@keyframes pop { 0%{ transform: scale(0) } 70%{ transform: scale(1.08) } 100%{ transform: scale(1) } }
+
+.main-fall{
+  animation: fallMain 1000ms ease-in forwards;
+  pointer-events:none;
+}
+@keyframes fallMain{
+  to{ transform: translateY(120vh) rotate(25deg); opacity:.6 }
+}
+
+.confetti{ position:fixed; width:12px; height:12px; border-radius:3px; pointer-events:none; z-index:10 }
+
+.raindrop{
+  position:fixed; top:-10vh; font-size: clamp(48px, 7vw, 96px);
+  pointer-events:none; z-index:5; filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
+  animation: fall linear forwards;
+}
+@keyframes fall{
+  to{ transform: translateY(120vh) rotate(360deg); opacity:.9 }
+}
+
+.hint{
+  position:fixed; right:10px; top:60px; z-index:2;
+  padding:.5rem .75rem; border-radius:12px;
+  background: color-mix(in hsl, var(--card), #fff 18%);
+  border:1px solid rgba(0,0,0,.06); color: var(--muted); font-size:14px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation:none !important; transition:none !important }
+}
