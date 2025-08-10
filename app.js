@@ -197,8 +197,8 @@ function place(s){
       sprites.forEach(s=>{
         s.size = Math.round(rand(72, 128));
         s.el.style.fontSize = s.size + 'px';
-        s.x = rand(0, innerWidth - s.size);
-        s.y = rand(70, innerHeight - 180 - s.size) + 60;
+        s.x = rand(0, field.clientWidth  - s.size);
+        s.y = rand(0, field.clientHeight - s.size);
         s.vx = (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX);
         s.vy = (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX);
         s.el.textContent = sample(currentSet());
