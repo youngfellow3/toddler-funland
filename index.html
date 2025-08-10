@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Toddler Funland — Emoji Rain + Categories</title>
+  <title>Toddler Funland — Emoji Rain</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header><div class="title">🎈 Toddler Funland — Emoji Rain</div></header>
-  <!-- <div class="hint">Tap emojis to giggle & grow. Tap background for gentle confetti.</div> -->
+  <header id="appHeader">
+    <div class="title">🎈 Toddler Funland — Emoji Rain</div>
+  </header>
 
+  <!-- Play area (height auto-adjusted by JS via CSS variables) -->
   <div id="playfield" aria-label="Play area"></div>
 
-  <!-- Colors | Rain | Switch Category | Start/Stop -->
+  <!-- Controls -->
   <div class="toolbar" id="toolbar" role="group" aria-label="Controls">
     <div class="tool-grid">
       <button class="btn btn--primary" id="btnTheme" aria-label="Change Colors">🎨 Colors</button>
