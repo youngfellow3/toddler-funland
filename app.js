@@ -61,8 +61,8 @@
     const s = {
       el,
       size: sizePx,
-      x: rand(0, innerWidth - sizePx),
-      y: rand(70, innerHeight - 180 - sizePx) + 60,
+      x: rand(0, field.clientWidth - sizePx),
+      y: rand(0, field.clientHeight - sizePx),
       vx: (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX),
       vy: (Math.random()<.5?-1:1) * rand(SPEED_MIN, SPEED_MAX),
       moving: true
@@ -82,12 +82,14 @@
     sprites.push(s);
   }
 
-  function place(s){
-    s.x = clamp(s.x, 0, innerWidth - s.size);
-    s.y = clamp(s.y, 60, innerHeight - 120 - s.size);
-    s.el.style.left = s.x + 'px';
-    s.el.style.top  = s.y + 'px';
-  }
+function place(s){
+  const maxX = field.clientWidth  - s.size;
+  const maxY = field.clientHeight - s.size;
+  s.x = clamp(s.x, 0, maxX);
+  s.y = clamp(s.y, 0, maxY);
+  s.el.style.left = s.x + 'px';
+  s.el.style.top  = s.y + 'px';
+}
 
   /* Animation loop */
   function tick(t){
