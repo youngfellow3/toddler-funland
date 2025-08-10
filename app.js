@@ -1,5 +1,29 @@
 (() => {
   const field = document.getElementById('playfield');
+  const toolbar = document.getElementById('toolbar');
+  const headerEl = document.querySelector('header');
+  
+  function syncLayoutVars(){
+    const th = toolbar ? toolbar.clientHeight : 112;
+    const hh = headerEl ? headerEl.clientHeight : 56;
+    document.documentElement.style.setProperty('--toolbarH', th + 'px');
+    document.documentElement.style.setProperty('--headerH',  hh + 'px');
+    // re-clamp sprites to the new playfield size
+    sprites.forEach(place);
+  }
+  
+  // run at startup
+  syncLayoutVars();
+  
+  // update when the window or UI changes size/rows
+  addEventListener('resize', syncLayoutVars);
+  
+  // also react to toolbar/header growing/shrinking (button wrap, font size changes, etc.)
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(syncLayoutVars).observe(toolbar);
+    new ResizeObserver(syncLayoutVars).observe(headerEl);
+  }
+  
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Themes */
