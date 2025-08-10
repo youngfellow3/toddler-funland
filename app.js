@@ -5,13 +5,24 @@
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // --- Keep playfield exactly between header & toolbar
-  function syncLayoutVars(){
-    // Fallbacks prevent zero height if elements are temporarily not measured
-    const th = toolbar ? Math.max(80, toolbar.clientHeight) : 112;
-    const hh = headerEl ? Math.max(40, headerEl.clientHeight) : 56;
-    document.documentElement.style.setProperty('--toolbarH', th + 'px');
-    document.documentElement.style.setProperty('--headerH',  hh + 'px');
-  }
+function syncLayoutVars(){
+  const th = toolbar ? Math.max(80, toolbar.offsetHeight) : 112;
+  const hh = headerEl ? Math.max(40, headerEl.offsetHeight) : 56;
+
+  // expose (still used by CSS)
+  document.documentElement.style.setProperty('--toolbarH', th + 'px');
+  document.documentElement.style.setProperty('--headerH',  hh + 'px');
+
+  // HARD-SET playfield height for mobile reliability
+  const avail = Math.max(140, window.innerHeight - hh - th); // at least 140px tall
+  field.style.position = 'fixed';
+  field.style.top = hh + 'px';
+  field.style.left = 0;
+  field.style.right = 0;
+  field.style.height = avail + 'px';     // <-- crucial on mobile
+  field.style.bottom = 'auto';
+}
+
   syncLayoutVars();
   addEventListener('resize', syncLayoutVars);
   if ('ResizeObserver' in window) {
@@ -259,26 +270,28 @@
 // --- Init AFTER we measure layout and the playfield is non-zero
 function waitForLayoutAndStart(tries = 30){
   syncLayoutVars();
-  // if playfield isn't ready yet (e.g., fonts/layout still settling), try again next frame
-  if (field.clientWidth > 0 && field.clientHeight > 80) {
+  const rect = field.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 100) {
     for (let i = 0; i < SPRITE_COUNT; i++) makeSprite();
     if (!prefersReduced) requestAnimationFrame(tick);
-    // clamp once more after first frame in case toolbar wraps
     requestAnimationFrame(() => { syncLayoutVars(); sprites.forEach(place); });
   } else if (tries > 0) {
     requestAnimationFrame(() => waitForLayoutAndStart(tries - 1));
   } else {
-    // last-resort fallback: give the playfield some space and proceed
-    document.documentElement.style.setProperty('--headerH',  '56px');
-    document.documentElement.style.setProperty('--toolbarH', '112px');
+    // last resort fallback
+    field.style.height = '60vh';
     for (let i = 0; i < SPRITE_COUNT; i++) makeSprite();
     if (!prefersReduced) requestAnimationFrame(tick);
   }
 }
+
 
 waitForLayoutAndStart();
 
 // Keep sprites in bounds on any resize
 addEventListener('resize', ()=> { syncLayoutVars(); sprites.forEach(place); });
 document.addEventListener('contextmenu', e=> e.preventDefault(), { passive:false });
+
+addEventListener('orientationchange', () => setTimeout(syncLayoutVars, 300));
+
 
