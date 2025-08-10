@@ -256,12 +256,29 @@
     document.body.animate([{filter:'brightness(1)'},{filter:'brightness(1.2)'},{filter:'brightness(1)'}], {duration:420});
   }
 
-  // --- Init AFTER we measure layout
+// --- Init AFTER we measure layout and the playfield is non-zero
+function waitForLayoutAndStart(tries = 30){
   syncLayoutVars();
-  for(let i=0;i<SPRITE_COUNT;i++) makeSprite();
-  if(!prefersReduced) requestAnimationFrame(tick);
+  // if playfield isn't ready yet (e.g., fonts/layout still settling), try again next frame
+  if (field.clientWidth > 0 && field.clientHeight > 80) {
+    for (let i = 0; i < SPRITE_COUNT; i++) makeSprite();
+    if (!prefersReduced) requestAnimationFrame(tick);
+    // clamp once more after first frame in case toolbar wraps
+    requestAnimationFrame(() => { syncLayoutVars(); sprites.forEach(place); });
+  } else if (tries > 0) {
+    requestAnimationFrame(() => waitForLayoutAndStart(tries - 1));
+  } else {
+    // last-resort fallback: give the playfield some space and proceed
+    document.documentElement.style.setProperty('--headerH',  '56px');
+    document.documentElement.style.setProperty('--toolbarH', '112px');
+    for (let i = 0; i < SPRITE_COUNT; i++) makeSprite();
+    if (!prefersReduced) requestAnimationFrame(tick);
+  }
+}
 
-  // Keep sprites in bounds on any resize
-  addEventListener('resize', ()=> sprites.forEach(place));
-  document.addEventListener('contextmenu', e=> e.preventDefault(), { passive:false });
-})();
+waitForLayoutAndStart();
+
+// Keep sprites in bounds on any resize
+addEventListener('resize', ()=> { syncLayoutVars(); sprites.forEach(place); });
+document.addEventListener('contextmenu', e=> e.preventDefault(), { passive:false });
+
